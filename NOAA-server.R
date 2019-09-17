@@ -20,7 +20,16 @@ server <- function(input, output) {
     if(input$parameters=="tavg") {"Average Temperature (°F)"}
     else if (input$parameters=="tmax") {print("Maximum Temperature (°F)")}
     else if (input$parameters=="tmin") {print("Minimum Temperature (°F)")}
-    else {print("Precipitation (inches)")}
+    else if (input$parameters=="pcp"){print("Precipitation (inches)")}
+    else if (input$parameters=="cdd"){print("Cooling Degree Days (Fahrenheit Degree-Days)")}
+    else if (input$parameters=="hdd"){print("Heating Degree Days (Fahrenheit Degree-Days)")}
+    else if (input$parameters=="pdsi"){print("PDSI")}
+    else if (input$parameters=="phdi"){print("PHDI")}
+    else if (input$parameters=="pmdi"){print("PMDI")}
+    else {print("Palmer Z-Index")}
+    #"Cooling Degree Days"=,"Heating Degree Days"=,
+    #"Palmer Drought Severity Index"=,"Palmer Hydrological Drought Index"=,
+    #"Palmer Modified Drought Index"=,"Palmer Z-Index"="zndx"
   })
   my_scale <- renderText({
     month_num <- as.numeric(input$month)
@@ -41,7 +50,7 @@ server <- function(input, output) {
     return(state_name)
   }) ##issues with being a character
   
-  output$my_plot <- renderPlot({
+  output$my_tsplot <- renderPlot({
     plot_csv <- my_csv()
     plot_label <- as.character(my_label())
     plot_scale <- as.character(my_scale())
@@ -50,6 +59,15 @@ server <- function(input, output) {
     ggplot(data=plot_csv, aes(x=Year,y=Value)) + geom_line() + geom_smooth(method="lm", se=FALSE) + theme_classic() +
       xlab("Years") + ylab(plot_label) + geom_hline(yintercept=mean(plot_csv$Value), color= "grey", lty=2)+
       ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))
+  })
+  output$my_dsplot <- renderPlot({
+    plot_csv <- my_csv()
+    plot_label <- as.character(my_label())
+    plot_scale <- as.character(my_scale())
+    plot_month <- as.character(my_month())
+    plot_state <- as.character(my_state())
+    ggplot(data=plot_csv, aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
+      xlab(plot_label) + ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))
   })
   output$my_mean <- renderText({
     plot_csv <- my_csv()
