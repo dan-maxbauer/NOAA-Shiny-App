@@ -27,9 +27,6 @@ server <- function(input, output) {
     else if (input$parameters=="phdi"){print("PHDI")}
     else if (input$parameters=="pmdi"){print("PMDI")}
     else {print("Palmer Z-Index")}
-    #"Cooling Degree Days"=,"Heating Degree Days"=,
-    #"Palmer Drought Severity Index"=,"Palmer Hydrological Drought Index"=,
-    #"Palmer Modified Drought Index"=,"Palmer Z-Index"="zndx"
   })
   my_scale <- renderText({
     month_num <- as.numeric(input$month)
