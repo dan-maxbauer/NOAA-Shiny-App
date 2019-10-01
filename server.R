@@ -6,7 +6,6 @@ shinyServer(function(input, output) {
   NOAA_states <- as.data.frame(NOAA_states[-c(2,11),])
   colnames(NOAA_states) <- "States"
   NOAA_states <- rbind(NOAA_states,data.frame("States" = c("NULL","Alaska","Hawaii")))
-
   ##inputs
   #graph1
   my_csv <- reactive({
@@ -140,87 +139,49 @@ shinyServer(function(input, output) {
     state_name <- as.character(NOAA_states[num,])
     return(state_name)
   })  
-
   ##outputs
-  output$my_tsplot <- renderPlot({
-    plot_csv <- my_csv()
-    plot_label <- as.character(my_label())
-    plot_scale <- as.character(my_scale())
-    plot_month <- as.character(my_month())
-    plot_state <- as.character(my_state())
-   
-    plot_csv2 <- my_csv2()
-    plot_label2 <- as.character(my_label2())
-    plot_scale2 <- as.character(my_scale2())
-    plot_month2 <- as.character(my_month2())
-    plot_state2 <- as.character(my_state2()) 
-   
-    plot_csv3 <- my_csv3()
-    plot_label3 <- as.character(my_label3())
-    plot_scale3 <- as.character(my_scale3())
-    plot_month3 <- as.character(my_month3())
-    plot_state3 <- as.character(my_state3()) 
-     
+  output$my_tsplot <- renderPlotly({ ggplotly(
     if(input$graph3==TRUE) {
-      ggplot(data=plot_csv, aes(x=Year,y=Value)) + geom_line() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-        xlab("Years") + ylab(plot_label) + geom_hline(yintercept=mean(plot_csv$Value), color= "grey", lty=2)+
-        ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))+
+      ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
+        xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
+        ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))+
         ##graph2
-        geom_line(data=plot_csv2, color="blue") + geom_smooth(data=plot_csv2, method="lm", se=FALSE, color="darkblue") + 
-        geom_hline(yintercept=mean(plot_csv2$Value), color= "cornflowerblue", lty=2) +
+        geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue") + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue") + 
+        geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2) +
         ##graph3
-        geom_line(data=plot_csv3, color="red") + geom_smooth(data=plot_csv3, method="lm", se=FALSE, color="red4") + 
-        geom_hline(yintercept=mean(plot_csv3$Value), color= "pink", lty=2) 
+        geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red") + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4") + 
+        geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2) 
     }
     else if(input$graph2==TRUE) {
-      
-      ggplot(data=plot_csv, aes(x=Year,y=Value)) + geom_line() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-        xlab("Years") + ylab(plot_label) + geom_hline(yintercept=mean(plot_csv$Value), color= "grey", lty=2)+
-        ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))+
-      ##graph2
-        geom_line(data=plot_csv2, color="blue") + geom_smooth(data=plot_csv2, method="lm", se=FALSE, color="darkblue") + 
-        geom_hline(yintercept=mean(plot_csv2$Value), color= "cornflowerblue", lty=2)
+      ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
+        xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
+        ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))+
+        ##graph2
+        geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue") + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue") + 
+        geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)
     }
-    else {ggplot(data=plot_csv, aes(x=Year,y=Value)) + geom_line() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-        xlab("Years") + ylab(plot_label) + geom_hline(yintercept=mean(plot_csv$Value), color= "grey", lty=2)+
-        ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))}
-  })
-  output$my_dsplot <- renderPlot({
-    plot_csv <- my_csv()
-    plot_label <- as.character(my_label())
-    plot_scale <- as.character(my_scale())
-    plot_month <- as.character(my_month())
-    plot_state <- as.character(my_state())
-    
-    plot_csv2 <- my_csv2()
-    plot_label2 <- as.character(my_label2())
-    plot_scale2 <- as.character(my_scale2())
-    plot_month2 <- as.character(my_month2())
-    plot_state2 <- as.character(my_state2())
-    
-    plot_csv3 <- my_csv3()
-    plot_label3 <- as.character(my_label3())
-    plot_scale3 <- as.character(my_scale3())
-    plot_month3 <- as.character(my_month3())
-    plot_state3 <- as.character(my_state3())
-
+    else {ggplot(data=my_csv(), aes(x=Year,y=Value, color="yes")) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE) + theme_classic() +
+        xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value),  lty=2)+
+        ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))}
+  )})
+  output$my_dsplot <- renderPlotly({ ggplotly(
     if(input$graph3==TRUE){
-      ggplot(data=plot_csv, aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
-        xlab(plot_label) + ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))+
+      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+        xlab(my_label()) + ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))+
         ##graph2
-        geom_density(data=plot_csv2,color="blue") + geom_vline(aes(xintercept = mean(plot_csv2$Value)), lty = 2,color="blue")+
+        geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")+
         ##graph2
-        geom_density(data=plot_csv3,color="red") + geom_vline(aes(xintercept = mean(plot_csv3$Value)), lty = 2,color="red")
+        geom_density(data=my_csv3(),color="red") + geom_vline(aes(xintercept = mean(my_csv3()$Value)), lty = 2,color="red")
     }
-    if(input$graph2==TRUE){
-      ggplot(data=plot_csv, aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
-        xlab(plot_label) + ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))+
+    else if(input$graph2==TRUE){
+      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+        xlab(my_label()) + ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))+
         ##graph2
-        geom_density(data=plot_csv2,color="blue") + geom_vline(aes(xintercept = mean(plot_csv2$Value)), lty = 2,color="blue")
+        geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")
     }
-    else {ggplot(data=plot_csv, aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
-      xlab(plot_label) + ggtitle(paste(plot_scale,"-",plot_month,plot_label,"in",plot_state,"from",input$years[1],"to",input$years[2]))}
-  })
+    else {ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+        xlab(my_label()) + ggtitle(paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2]))}
+  )})
   output$my_mean <- renderText({
     plot_csv <- my_csv()
     plot_label <- as.character(my_label())

@@ -1,5 +1,6 @@
 library(shiny)
 library(tidyverse)
+library(plotly)
 
 ui <- fluidPage(sidebarLayout(position = "right",
   sidebarPanel(navbarPage(title="Options",
@@ -118,14 +119,14 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                 ),
                        tabPanel("Time Series",
                                 mainPanel(
-                                plotOutput("my_tsplot"),
+                                plotlyOutput("my_tsplot"),
                                 textOutput("my_mean"),
                                 textOutput("my_line"),
                                 h5("Copy and paste your dataset URL below"),
                                 a(href=textOutput("my_url"), "Click here to visit your dataset!"))),
                        tabPanel("Distribution Plots", 
                                 mainPanel(
-                                plotOutput("my_dsplot"),    
+                                plotlyOutput("my_dsplot"),    
                                 h5("hello"))),
                        tabPanel("Resources",
                                 mainPanel(
