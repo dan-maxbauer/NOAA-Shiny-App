@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 
-server <- function(input, output) {
+shinyServer(function(input, output) {
   NOAA_states <- as.data.frame(state.name)
   NOAA_states <- as.data.frame(NOAA_states[-c(2,11),])
   colnames(NOAA_states) <- "States"
@@ -243,7 +243,4 @@ server <- function(input, output) {
                           ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
     return(plot_formula)
   })
-}
-
-
-shinyApp(ui=ui, server=server)
+})
