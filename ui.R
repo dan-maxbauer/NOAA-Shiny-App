@@ -4,8 +4,7 @@ library(plotly)
 
 ui <- fluidPage(sidebarLayout(position = "right",
   sidebarPanel(navbarPage(title="Options",
-                          tabPanel("Graph 1",
-                                   
+                          tabPanel("Dataset 1",
                                    selectInput("parameters", h3("Parameters"),
                                                choices = list("Avg Temperature"="tavg","Max Temperature"="tmax","Min Temperature"="tmin",
                                                               "Precipitation"="pcp","Cooling Degree Days"="cdd","Heating Degree Days"="hdd",
@@ -32,7 +31,7 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
                                                               "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48))
                                      ),
-                          tabPanel("Graph 2",
+                          tabPanel("Dataset 2",
                                    checkboxInput("graph2",h4("Click here to add a second dataset to your graph")),
                                    h6("Please keep parameters the same when comparing two graphs"),
                                    selectInput("parameters2", h3("Parameters"),
@@ -61,7 +60,7 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
                                                               "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48))
                           ),
-                          tabPanel("Graph 3",
+                          tabPanel("Dataset 3",
                                    checkboxInput("graph3",h4("Click here to add a third dataset to your graph")),
                                    h6("Please keep parameters the same when comparing three graphs"),
                                    selectInput("parameters3", h3("Parameters"),
@@ -119,15 +118,24 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                 ),
                        tabPanel("Time Series",
                                 mainPanel(
-                                plotlyOutput("my_tsplot"),
-                                textOutput("my_mean"),
-                                textOutput("my_line"),
-                                h5("Copy and paste your dataset URL below"),
-                                a(href=textOutput("my_url"), "Click here to visit your dataset!"))),
+                                  fluidRow(
+                                    column(12, plotlyOutput("my_tsplot"))
+                                  ),
+                                  fluidRow(
+                                    column(4, wellPanel(style = "background: lightgrey",textOutput("my_legend1"),textOutput("my_mean1"),textOutput("my_line1"))),
+                                    column(4, wellPanel(style = "background: cornflowerblue",textOutput("my_legend2"),textOutput("my_mean2"),textOutput("my_line2"))),
+                                    column(4, wellPanel(style = "background: pink",textOutput("my_legend3"),textOutput("my_mean3"),textOutput("my_line3")))
+                                  ))),
                        tabPanel("Distribution Plots", 
                                 mainPanel(
-                                plotlyOutput("my_dsplot"),    
-                                h5("hello"))),
+                                  fluidRow(
+                                    column(12, plotlyOutput("my_dsplot"))
+                                  ),
+                                  fluidRow(
+                                    column(4, wellPanel(style = "background: lightgrey",textOutput("my_legend1ds"),textOutput("my_mean1ds"))),
+                                    column(4, wellPanel(style = "background: cornflowerblue",textOutput("my_legend2ds"),textOutput("my_mean2ds"))),
+                                    column(4, wellPanel(style = "background: pink",textOutput("my_legend3ds"),textOutput("my_mean3ds")))
+                                  ))),
                        tabPanel("Resources",
                                 mainPanel(
                                   h3("Questions?"),
