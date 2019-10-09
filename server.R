@@ -164,7 +164,7 @@ shinyServer(function(input, output) {
   )})
   output$my_dsplot <- renderPlotly({ ggplotly(
     if(input$graph3==TRUE){
-      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
         xlab(my_label()) +
         ##graph2
         geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")+
@@ -172,12 +172,12 @@ shinyServer(function(input, output) {
         geom_density(data=my_csv3(),color="red") + geom_vline(aes(xintercept = mean(my_csv3()$Value)), lty = 2,color="red")
     }
     else if(input$graph2==TRUE){
-      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+      ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
         xlab(my_label()) + 
         ##graph2
         geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")
     }
-    else {ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2,) + theme_classic() +
+    else {ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
         xlab(my_label())}
   )})
     #graph1
