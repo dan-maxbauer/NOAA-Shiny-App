@@ -5,6 +5,8 @@ library(plotly)
 ui <- fluidPage(sidebarLayout(position = "right",
   sidebarPanel(navbarPage(title="Options",
                           tabPanel("Dataset 1",
+                                   checkboxInput("graph1",h4("Click here to add a first dataset to your graph")),
+                                   h6("Please keep parameters the same when comparing multiple datasets"),
                                    selectInput("parameters", h3("Parameters"),
                                                choices = list("Avg Temperature"="tavg","Max Temperature"="tmax","Min Temperature"="tmin",
                                                               "Precipitation"="pcp","Cooling Degree Days"="cdd","Heating Degree Days"="hdd",
@@ -33,7 +35,7 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                      ),
                           tabPanel("Dataset 2",
                                    checkboxInput("graph2",h4("Click here to add a second dataset to your graph")),
-                                   h6("Please keep parameters the same when comparing two graphs"),
+                                   h6("Please keep parameters the same when comparing multiple datasets"),
                                    selectInput("parameters2", h3("Parameters"),
                                                choices = list("Avg Temperature"="tavg","Max Temperature"="tmax","Min Temperature"="tmin",
                                                               "Precipitation"="pcp","Cooling Degree Days"="cdd","Heating Degree Days"="hdd",
@@ -62,7 +64,7 @@ ui <- fluidPage(sidebarLayout(position = "right",
                           ),
                           tabPanel("Dataset 3",
                                    checkboxInput("graph3",h4("Click here to add a third dataset to your graph")),
-                                   h6("Please keep parameters the same when comparing three graphs"),
+                                   h6("Please keep parameters the same when comparing multiple datasets"),
                                    selectInput("parameters3", h3("Parameters"),
                                                choices = list("Avg Temperature"="tavg","Max Temperature"="tmax","Min Temperature"="tmin",
                                                               "Precipitation"="pcp","Cooling Degree Days"="cdd","Heating Degree Days"="hdd",
@@ -119,22 +121,30 @@ ui <- fluidPage(sidebarLayout(position = "right",
                        tabPanel("Time Series",
                                 mainPanel(
                                   fluidRow(
-                                    column(12, plotlyOutput("my_tsplot"))
+                                    uiOutput("ts_error_message")
                                   ),
                                   fluidRow(
-                                    column(4, wellPanel(style = "background: lightgrey",textOutput("my_legend1"),textOutput("my_mean1"),textOutput("my_line1"))),
-                                    column(4, wellPanel(style = "background: cornflowerblue",textOutput("my_legend2"),textOutput("my_mean2"),textOutput("my_line2"))),
-                                    column(4, wellPanel(style = "background: pink",textOutput("my_legend3"),textOutput("my_mean3"),textOutput("my_line3")))
+                                    column(12, plotlyOutput("my_tsplot"))
+                                  ),
+                                  br(),
+                                  fluidRow(
+                                    uiOutput("my_legend1ts"),
+                                    uiOutput("my_legend2ts"),
+                                    uiOutput("my_legend3ts")
                                   ))),
                        tabPanel("Distribution Plots", 
                                 mainPanel(
                                   fluidRow(
-                                    column(12, plotlyOutput("my_dsplot"))
+                                    uiOutput("ds_error_message")
                                   ),
                                   fluidRow(
-                                    column(4, wellPanel(style = "background: lightgrey",textOutput("my_legend1ds"),textOutput("my_mean1ds"))),
-                                    column(4, wellPanel(style = "background: cornflowerblue",textOutput("my_legend2ds"),textOutput("my_mean2ds"))),
-                                    column(4, wellPanel(style = "background: pink",textOutput("my_legend3ds"),textOutput("my_mean3ds")))
+                                    column(12, plotlyOutput("my_dsplot"))
+                                  ),
+                                  br(),
+                                  fluidRow(
+                                    uiOutput("my_legend1ds"),
+                                    uiOutput("my_legend2ds"),
+                                    uiOutput("my_legend3ds")
                                   ))),
                        tabPanel("Resources",
                                 mainPanel(
