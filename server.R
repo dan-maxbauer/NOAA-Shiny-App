@@ -153,23 +153,60 @@ shinyServer(function(input, output) {
    if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
      h1("Please click the checkbox to display a graph")
    }
-    else if(is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {
-     h1("There is No Existing Dataset for Your Current Settings. Please Change Your Dataset to Display a Graph")
-   }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1, 2, & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 2 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 3 to Display a Graph", style = "color:red")
+    }
    else{}
  })
   output$ds_error_message <- renderUI({
     if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
       h1("Please click the checkbox to display a graph")
     }
-    else if(is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Dataset to Display a Graph")
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1, 2, & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 2 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 & 3 to Display a Graph", style = "color:red")
+    }
+    else if(is.null(my_csv())==FALSE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 3 to Display a Graph", style = "color:red")
     }
    else{}
  })
  
-  output$my_tsplot <- renderPlotly({ ggplotly(
-     if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE) {
+  output$my_tsplot <- renderPlotly({ ggplotly( 
+     if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
+     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE) {
        ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
          xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
          ##graph2
@@ -209,11 +246,12 @@ shinyServer(function(input, output) {
      else if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==TRUE){
        ggplot(data=my_csv3(), aes(x=Year,y=Value)) + geom_line(color="red") + geom_point(color="red") + geom_smooth(method="lm", se=FALSE, color="red4") + 
          theme_classic() + xlab("Years") + ylab(my_label3()) + geom_hline(yintercept=mean(my_csv3()$Value), color= "pink",  lty=2)
-       }
+     }
      else return(NULL)
    )})
   output$my_dsplot <- renderPlotly({ ggplotly(
-     if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE){
+     if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
+     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE){
        ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
          xlab(my_label()) +
          ##graph2
