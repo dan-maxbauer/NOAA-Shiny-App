@@ -31,7 +31,9 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "New Mexico"=29,"New York"=30,"North Carolina"=31,"North Dakota"=32,"Ohio"=33,
                                                               "Oklahoma"=34,"Oregon"=35,"Pennsylvania"=36,"Rhode Island"=37,"South Carolina"=38,
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
-                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48))
+                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48)),
+                                   selectInput("county", h3("County"),
+                                               choices = countylist)
                                      ),
                           tabPanel("Dataset 2",
                                    checkboxInput("graph2",h4("Click here to add a second dataset to your graph")),
@@ -95,6 +97,7 @@ ui <- fluidPage(sidebarLayout(position = "right",
   
   mainPanel(navbarPage(title = "Climate at a Glance",
                        tabPanel("Home",
+                                textOutput("county_ex"),
                                 h1("Carleton Climate at a Glance"),
                                 h6("Welcome to Carleton Climate at a Glance. This Shiny app was created in response to the slow loading time of the website
                                    NOAA Climate at a Glance. Although this app does not have all the capabilities of the original website, it contains additional

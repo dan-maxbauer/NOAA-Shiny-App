@@ -6,6 +6,20 @@ shinyServer(function(input, output) {
   NOAA_states <- as.data.frame(NOAA_states[-c(2,11),])
   colnames(NOAA_states) <- "States"
   NOAA_states <- rbind(NOAA_states,data.frame("States" = c("NULL","Alaska","Hawaii")))
+  
+  counties <- readr::read_table("https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt",skip=70)
+  counties <- counties[-c(1,2,70,99,115,191,250,314,323,329,397,557,563,608,711,804,904,1010,1131,1196,1213,
+                          1238,1253,1337,1425,1508,1624,1682,1776,1794,1805,1827,1861,1924,2025,2079,2168,
+                          2246,2283,2351,2357,2404,2471,2567,2822,2852,2867,3004,3044,3100,3173),]
+  colnames(counties) <- c("FIPS Code","County")
+  counties <- counties %>% mutate(CountyCode = substr(`FIPS Code`, 3, 5))
+  countylist <- list()
+  for (i in 1:3145) {
+    name <- counties[i,2]
+    num <- counties[i,3]
+    countylist[i] <- paste(name,"=",num,sep="")
+  }
+  
   ##inputs
   my_csv <- reactive({
     my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
@@ -53,7 +67,7 @@ shinyServer(function(input, output) {
     state_name <- as.character(NOAA_states[num,])
     return(state_name)
   })
-
+  
   my_csv2 <- reactive({
     my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
                     input$state2,"-",input$parameters2,"-",input$scale2,"-",
@@ -149,6 +163,8 @@ shinyServer(function(input, output) {
   })
   
   ##outputs
+  output$county_ex <- renderText(return(input$county))
+  
   output$ts_error_message <- renderUI({
    if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
      h1("Please click the checkbox to display a graph")
