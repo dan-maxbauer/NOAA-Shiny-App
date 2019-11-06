@@ -6,13 +6,19 @@ shinyServer(function(input, output) {
   NOAA_states <- as.data.frame(NOAA_states[-c(2,11),])
   colnames(NOAA_states) <- "States"
   NOAA_states <- rbind(NOAA_states,data.frame("States" = c("NULL","Alaska","Hawaii")))
+  NOAA_states$StateAbr <- c("AL","AZ","AR","CA","CO","CT","DE","FL","GA","ID","IL","IN","IA","KS",
+                            "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+                            "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT",
+                            "VT","VA","WA","WV","WI","WY","NULL","AK","HI")
   
   counties <- readr::read_table("https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt",skip=70)
   counties <- counties[-c(1,2,70,99,115,191,250,314,323,329,397,557,563,608,711,804,904,1010,1131,1196,1213,
                           1238,1253,1337,1425,1508,1624,1682,1776,1794,1805,1827,1861,1924,2025,2079,2168,
                           2246,2283,2351,2357,2404,2471,2567,2822,2852,2867,3004,3044,3100,3173),]
   colnames(counties) <- c("FIPS Code","County")
+  counties[859,2] = "O'Brien County"
   counties <- counties %>% mutate(CountyCode = substr(`FIPS Code`, 3, 5))
+  
   countylist <- list()
   for (i in 1:3145) {
     name <- counties[i,2]
@@ -20,12 +26,29 @@ shinyServer(function(input, output) {
     countylist[i] <- paste(name,"=",num,sep="")
   }
   
+  county_by_state <- data.frame(
+    first = c(1,96,111,186,244,307,315,320,387,551,595,697,789,888,993,1113,1177,1193,1217,1231,1314,1401,
+              1483,1598,1655,1748,1765,1775,1796,1829,1891,1991,2044,2132,2209,2245,2312,2317,2363,2429,
+              2524,2778,2807,2821,2957,2996,3051,3123,0,68,546),
+    last = c(67,110,185,243,306,314,317,386,545,594,696,788,887,992,1112,1176,1192,1216,1230,1313,1400,1482,
+             1597,1654,1747,1764,1774,1795,1828,1890,1990,2043,2131,2208,2244,2311,2316,2362,2428,2523,
+             2777,2806,2820,2956,2995,3050,3122,3145,0,95,550)
+  )
   ##inputs
   my_csv <- reactive({
-    my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
-                    input$state,"-",input$parameters,"-",input$scale,"-",
-                    input$month,"-",input$years[1],"-",input$years[2],
-                    ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    if (input$countybox1==TRUE) {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/county/time-series/",
+                      NOAA_states[input$state,2],"-",substring(input$county,nchar(input$county)-2,nchar(input$county)),
+                      "-",input$parameters,"-",input$scale,"-",
+                      input$month,"-",input$years[1],"-",input$years[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
+    else {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
+                      input$state,"-",input$parameters,"-",input$scale,"-",
+                      input$month,"-",input$years[1],"-",input$years[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
     if(is.null(tryCatch(readr::read_csv(my_url), error=function(e) NULL))==TRUE)
       {return(NULL)}
     else 
@@ -64,7 +87,7 @@ shinyServer(function(input, output) {
   })
   my_state <- renderText({
     num <- as.numeric(input$state)
-    state_name <- as.character(NOAA_states[num,])
+    state_name <- as.character(NOAA_states[num,1])
     return(state_name)
   })
   
@@ -163,8 +186,6 @@ shinyServer(function(input, output) {
   })
   
   ##outputs
-  output$county_ex <- renderText(return(input$county))
-  
   output$ts_error_message <- renderUI({
    if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
      h1("Please click the checkbox to display a graph")
@@ -308,10 +329,20 @@ shinyServer(function(input, output) {
      else return(NULL)
    )})
 
+  output$county_box1 <- renderUI({
+    county_legend_list <- list()
+    for (i in county_by_state[input$state,1]:county_by_state[input$state,2]) {county_legend_list <- c(county_legend_list,countylist[i])}
+    if (input$countybox1==TRUE) {
+      selectInput("county", h3("County"),choices = county_legend_list)
+    }
+    else{}
+  })
   output$my_legend1ts <- renderUI({
     if(input$graph1==TRUE&is.null(my_csv())==FALSE){
-      title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2])}
-      else {paste(my_scale1(),"-",my_month1(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2])}
+      my_location <- if (input$countybox1==FALSE) {my_state()}
+        else {paste(substring(input$county,1,nchar(input$county)-4)," ",NOAA_states[input$state,2])}
+      title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
+        else {paste(my_scale1(),"-",my_month1(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
@@ -326,8 +357,10 @@ shinyServer(function(input, output) {
   })
   output$my_legend1ds <- renderUI({
     if(input$graph1==TRUE&is.null(my_csv())==FALSE){
-      title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2])}
-      else {paste(my_scale(),"-",my_month(),my_label(),"in",my_state(),"from",input$years[1],"to",input$years[2])}
+      my_location <- if (input$countybox1==FALSE) {my_state()}
+      else {paste(substring(input$county,1,nchar(input$county)-4)," ",NOAA_states[input$state,2])}
+      title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
+      else {paste(my_scale1(),"-",my_month1(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
