@@ -33,7 +33,9 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
                                                               "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48)),
                                    checkboxInput("countybox1",h4("Click here to look at county data")),
-                                   uiOutput("county_box1")
+                                   uiOutput("county_box1"),
+                                   br(),
+                                   br()
                                      ),
                           tabPanel("Dataset 2",
                                    checkboxInput("graph2",h4("Click here to add a second dataset to your graph")),
@@ -62,7 +64,11 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "New Mexico"=29,"New York"=30,"North Carolina"=31,"North Dakota"=32,"Ohio"=33,
                                                               "Oklahoma"=34,"Oregon"=35,"Pennsylvania"=36,"Rhode Island"=37,"South Carolina"=38,
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
-                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48))
+                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48)),
+                                   checkboxInput("countybox2",h4("Click here to look at county data")),
+                                   uiOutput("county_box2"),
+                                   br(),
+                                   br()
                           ),
                           tabPanel("Dataset 3",
                                    checkboxInput("graph3",h4("Click here to add a third dataset to your graph")),
@@ -91,7 +97,11 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                                               "New Mexico"=29,"New York"=30,"North Carolina"=31,"North Dakota"=32,"Ohio"=33,
                                                               "Oklahoma"=34,"Oregon"=35,"Pennsylvania"=36,"Rhode Island"=37,"South Carolina"=38,
                                                               "South Dakota"=39,"Tennessee"=40,"Texas"=41,"Utah"=42,"Vermont"=43,
-                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48))
+                                                              "Virginia"=44,"Washington"=45,"West Virginia"=46,"Wisconsin"=47,"Wyoming"=48)),
+                                   checkboxInput("countybox3",h4("Click here to look at county data")),
+                                   uiOutput("county_box3"),
+                                   br(),
+                                   br()
                           )
               )),
   
@@ -132,6 +142,9 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                     uiOutput("ts_error_message")
                                   ),
                                   fluidRow(
+                                    uiOutput("ts_refresh")
+                                  ),
+                                  fluidRow(
                                     column(12, plotlyOutput("my_tsplot"))
                                   ),
                                   br(),
@@ -144,6 +157,9 @@ ui <- fluidPage(sidebarLayout(position = "right",
                                 mainPanel(
                                   fluidRow(
                                     uiOutput("ds_error_message")
+                                  ),
+                                  fluidRow(
+                                    uiOutput("ds_refresh")
                                   ),
                                   fluidRow(
                                     column(12, plotlyOutput("my_dsplot"))

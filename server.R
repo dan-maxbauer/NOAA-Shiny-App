@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
   NOAA_states <- as.data.frame(state.name)
   NOAA_states <- as.data.frame(NOAA_states[-c(2,11),])
   colnames(NOAA_states) <- "States"
@@ -92,10 +92,19 @@ shinyServer(function(input, output) {
   })
   
   my_csv2 <- reactive({
-    my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
-                    input$state2,"-",input$parameters2,"-",input$scale2,"-",
-                    input$month2,"-",input$years2[1],"-",input$years2[2],
-                    ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    if (input$countybox2==TRUE) {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/county/time-series/",
+                      NOAA_states[input$state2,2],"-",substring(input$county2,nchar(input$county2)-2,nchar(input$county2)),
+                      "-",input$parameters2,"-",input$scale2,"-",
+                      input$month2,"-",input$years2[1],"-",input$years2[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
+    else {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
+                      input$state2,"-",input$parameters2,"-",input$scale2,"-",
+                      input$month2,"-",input$years2[1],"-",input$years2[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
     if(is.null(tryCatch(readr::read_csv(my_url), error=function(e) NULL))==TRUE)
     {return(NULL)}
     else 
@@ -134,15 +143,24 @@ shinyServer(function(input, output) {
   })
   my_state2 <- renderText({
     num <- as.numeric(input$state2)
-    state_name <- as.character(NOAA_states[num,])
+    state_name <- as.character(NOAA_states[num,1])
     return(state_name)
   })  
 
   my_csv3 <- reactive({
-    my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
-                    input$state3,"-",input$parameters3,"-",input$scale3,"-",
-                    input$month3,"-",input$years3[1],"-",input$years3[2],
-                    ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    if (input$countybox3==TRUE) {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/county/time-series/",
+                      NOAA_states[input$state3,2],"-",substring(input$county3,nchar(input$county3)-2,nchar(input$county3)),
+                      "-",input$parameters3,"-",input$scale3,"-",
+                      input$month3,"-",input$years3[1],"-",input$years3[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
+    else {
+      my_url <- paste("https://www.ncdc.noaa.gov/cag/statewide/time-series/",
+                      input$state3,"-",input$parameters3,"-",input$scale3,"-",
+                      input$month3,"-",input$years3[1],"-",input$years3[2],
+                      ".csv?base_prd=true&begbaseyear=1901&endbaseyear=2000",sep = "")
+    }
     if(is.null(tryCatch(readr::read_csv(my_url), error=function(e) NULL))==TRUE)
     {return(NULL)}
     else 
@@ -181,38 +199,44 @@ shinyServer(function(input, output) {
   })
   my_state3 <- renderText({
     num <- as.numeric(input$state3)
-    state_name <- as.character(NOAA_states[num,])
+    state_name <- as.character(NOAA_states[num,1])
     return(state_name)
   })
   
   ##outputs
+  observeEvent(input$refresh ,{session$reload()})
+  
   output$ts_error_message <- renderUI({
    if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
      h1("Please click the checkbox to display a graph")
    }
     else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1, 2, & 3 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1, 2, & 3 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==TRUE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 2 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 2 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 3 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 & 3 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==TRUE&is.null(my_csv2())==FALSE&is.null(my_csv3())==FALSE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 1 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==FALSE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==FALSE&is.null(my_csv2())==TRUE&is.null(my_csv3())==TRUE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 & 3 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 2 & 3 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
     else if(is.null(my_csv())==FALSE&is.null(my_csv2())==FALSE&is.null(my_csv3())==TRUE) {
-      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 3 to Display a Graph", style = "color:red")
+      h1("There is No Existing Dataset for Your Current Settings. Please Change Your Current Settings for Dataset 3 to Display a Graph or Restart the App by Clicking the Button Below", style = "color:red")
     }
    else{}
  })
+  output$ts_refresh <- renderUI({
+    if(is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {actionButton("refresh","Refresh")}
+    else {}
+      })
   output$ds_error_message <- renderUI({
     if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==FALSE) {
       h1("Please click the checkbox to display a graph")
@@ -240,7 +264,12 @@ shinyServer(function(input, output) {
     }
    else{}
  })
- 
+  output$ds_refresh <- renderUI({
+    if(is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {actionButton("refresh","Refresh")}
+    else {}
+  })
+  
+  
   output$my_tsplot <- renderPlotly({ ggplotly( 
      if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
      else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE) {
@@ -342,7 +371,7 @@ shinyServer(function(input, output) {
       my_location <- if (input$countybox1==FALSE) {my_state()}
         else {paste(substring(input$county,1,nchar(input$county)-4)," ",NOAA_states[input$state,2])}
       title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
-        else {paste(my_scale1(),"-",my_month1(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
+        else {paste(my_scale(),"-",my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
@@ -360,7 +389,7 @@ shinyServer(function(input, output) {
       my_location <- if (input$countybox1==FALSE) {my_state()}
       else {paste(substring(input$county,1,nchar(input$county)-4)," ",NOAA_states[input$state,2])}
       title <- if(input$scale==1) {paste(my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
-      else {paste(my_scale1(),"-",my_month1(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
+      else {paste(my_scale(),"-",my_month(),my_label(),"in",my_location,"from",input$years[1],"to",input$years[2])}
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
@@ -369,10 +398,20 @@ shinyServer(function(input, output) {
     else {}
   })
   
+  output$county_box2 <- renderUI({
+    county_legend_list <- list()
+    for (i in county_by_state[input$state2,1]:county_by_state[input$state2,2]) {county_legend_list <- c(county_legend_list,countylist[i])}
+    if (input$countybox2==TRUE) {
+      selectInput("county2", h3("County"),choices = county_legend_list)
+    }
+    else{}
+  })
   output$my_legend2ts <- renderUI({
-     if(input$graph2==TRUE&is.null(my_csv2())==FALSE){
-       title <- if(input$scale2==1) {paste(my_month2(),my_label2(),"in",my_state2(),"from",input$years2[1],"to",input$years2[2])}
-       else {paste(my_scale2(),"-",my_month2(),my_label2(),"in",my_state2(),"from",input$years2[1],"to",input$years2[2])}
+    if(input$graph2==TRUE&is.null(my_csv())==FALSE){
+      my_location <- if (input$countybox2==FALSE) {my_state2()}
+      else {paste(substring(input$county2,1,nchar(input$county2)-4)," ",NOAA_states[input$state2,2])}
+      title <- if(input$scale2==1) {paste(my_month2(),my_label2(),"in",my_location,"from",input$years2[1],"to",input$years2[2])}
+      else {paste(my_scale2(),"-",my_month2(),my_label2(),"in",my_location,"from",input$years2[1],"to",input$years2[2])}
        plot_csv <- my_csv2()
        plot_label <- as.character(my_label2())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
@@ -386,9 +425,11 @@ shinyServer(function(input, output) {
      else {}
    })
   output$my_legend2ds <- renderUI({
-     if(input$graph2==TRUE&is.null(my_csv2())==FALSE){
-       title <- if(input$scale2==1) {paste(my_month2(),my_label2(),"in",my_state2(),"from",input$years2[1],"to",input$years2[2])}
-       else {paste(my_scale2(),"-",my_month2(),my_label2(),"in",my_state2(),"from",input$years2[1],"to",input$years2[2])}
+    if(input$graph2==TRUE&is.null(my_csv())==FALSE){
+      my_location <- if (input$countybox2==FALSE) {my_state2()}
+      else {paste(substring(input$county2,1,nchar(input$county2)-4)," ",NOAA_states[input$state2,2])}
+      title <- if(input$scale2==1) {paste(my_month2(),my_label2(),"in",my_location,"from",input$years2[1],"to",input$years2[2])}
+      else {paste(my_scale2(),"-",my_month2(),my_label2(),"in",my_location,"from",input$years2[1],"to",input$years2[2])}
        plot_csv <- my_csv2()
        plot_label <- as.character(my_label2())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
@@ -396,11 +437,21 @@ shinyServer(function(input, output) {
      }
      else {}
    })
-   
+
+  output$county_box3 <- renderUI({
+    county_legend_list <- list()
+    for (i in county_by_state[input$state3,1]:county_by_state[input$state3,2]) {county_legend_list <- c(county_legend_list,countylist[i])}
+    if (input$countybox3==TRUE) {
+      selectInput("county3", h3("County"),choices = county_legend_list)
+    }
+    else{}
+  })
   output$my_legend3ts <- renderUI({
      if(input$graph3==TRUE&is.null(my_csv3())==FALSE){
-       title <- if(input$scale3==1) {paste(my_month3(),my_label3(),"in",my_state3(),"from",input$years3[1],"to",input$years3[2])}
-       else {paste(my_scale3(),"-",my_month3(),my_label3(),"in",my_state3(),"from",input$years3[1],"to",input$years3[2])}
+       my_location <- if (input$countybox3==FALSE) {my_state3()}
+       else {paste(substring(input$county3,1,nchar(input$county3)-4)," ",NOAA_states[input$state3,2])}
+       title <- if(input$scale3==1) {paste(my_month3(),my_label3(),"in",my_location,"from",input$years3[1],"to",input$years3[2])}
+       else {paste(my_scale3(),"-",my_month3(),my_label3(),"in",my_location,"from",input$years3[1],"to",input$years3[2])}
        plot_csv <- my_csv3()
        plot_label <- as.character(my_label3())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
