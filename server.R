@@ -380,7 +380,8 @@ shinyServer(function(input, output,session) {
       slope <- round(summary_lm$coefficients[2],3)
       intercept <- round(summary_lm$coefficients[1],2)
       line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula,br(),br(),line_formula))
+      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+                          downloadButton("my_download1ts","Dowload")))
     }
     else {}
   })
@@ -393,10 +394,29 @@ shinyServer(function(input, output,session) {
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula))
+      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula,br(),br(),
+                          downloadButton("my_download1ds","Dowload")))
     }
     else {}
   })
+  output$my_download1ts <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox1==FALSE) {NOAA_states[input$state,2]}
+      else {paste(substring(input$county,1,nchar(input$county)-4),"-",NOAA_states[input$state,2], sep="")}
+      title <- if(input$scale==1) {paste(substring(my_month(),1,3),"-",input$parameters,"-",my_location,"-",input$years[1],"-",input$years[2],".csv", sep="")}
+      else {paste(substring(my_scale(),1,3),"-",substring(my_month(),1,3),"-",input$parameters,"-",my_location,"-",input$years[1],"-",input$years[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv(),file)}
+  )
+  output$my_download1ds <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox1==FALSE) {NOAA_states[input$state,2]}
+      else {paste(substring(input$county,1,nchar(input$county)-4),"-",NOAA_states[input$state,2], sep="")}
+      title <- if(input$scale==1) {paste(substring(my_month(),1,3),"-",input$parameters,"-",my_location,"-",input$years[1],"-",input$years[2],".csv", sep="")}
+      else {paste(substring(my_scale(),1,3),"-",substring(my_month(),1,3),"-",input$parameters,"-",my_location,"-",input$years[1],"-",input$years[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv(),file)}
+  )
   
   output$county_box2 <- renderUI({
     county_legend_list <- list()
@@ -420,7 +440,8 @@ shinyServer(function(input, output,session) {
        slope <- round(summary_lm$coefficients[2],3)
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula,br(),br(),line_formula))
+       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+                           downloadButton("my_download2ts","Dowload")))
      }
      else {}
    })
@@ -433,11 +454,30 @@ shinyServer(function(input, output,session) {
        plot_csv <- my_csv2()
        plot_label <- as.character(my_label2())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula))
+       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula,br(),br(),
+                           downloadButton("my_download2ds","Dowload")))
      }
      else {}
    })
-
+  output$my_download2ts <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox2==FALSE) {NOAA_states[input$state2,2]}
+      else {paste(substring(input$county2,1,nchar(input$county2)-4),"-",NOAA_states[input$state2,2], sep="")}
+      title <- if(input$scale2==1) {paste(substring(my_month2(),1,3),"-",input$parameters2,"-",my_location,"-",input$years2[1],"-",input$years2[2],".csv", sep="")}
+      else {paste(substring(my_scale2(),1,3),"-",substring(my_month2(),1,3),"-",input$parameters2,"-",my_location,"-",input$years2[1],"-",input$years2[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv2(),file)}
+  )
+  output$my_download2ds <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox2==FALSE) {NOAA_states[input$state2,2]}
+      else {paste(substring(input$county2,1,nchar(input$county2)-4),"-",NOAA_states[input$state2,2], sep="")}
+      title <- if(input$scale2==1) {paste(substring(my_month2(),1,3),"-",input$parameters2,"-",my_location,"-",input$years2[1],"-",input$years2[2],".csv", sep="")}
+      else {paste(substring(my_scale2(),1,3),"-",substring(my_month2(),1,3),"-",input$parameters2,"-",my_location,"-",input$years2[1],"-",input$years2[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv2(),file)}
+  )
+  
   output$county_box3 <- renderUI({
     county_legend_list <- list()
     for (i in county_by_state[input$state3,1]:county_by_state[input$state3,2]) {county_legend_list <- c(county_legend_list,countylist[i])}
@@ -460,7 +500,8 @@ shinyServer(function(input, output,session) {
        slope <- round(summary_lm$coefficients[2],3)
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula,br(),br(),line_formula))
+       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+                           downloadButton("my_download3ts","Dowload")))
      }
      else {}
    })
@@ -471,9 +512,28 @@ shinyServer(function(input, output,session) {
        plot_csv <- my_csv3()
        plot_label <- as.character(my_label3())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula))
+       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula,br(),br(),
+                           downloadButton("my_download3ds","Dowload")))
      }
      else {}
    })
+  output$my_download3ts <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox3==FALSE) {NOAA_states[input$state3,2]}
+      else {paste(substring(input$county3,1,nchar(input$county3)-4),"-",NOAA_states[input$state3,2], sep="")}
+      title <- if(input$scale3==1) {paste(substring(my_month3(),1,3),"-",input$parameters3,"-",my_location,"-",input$years3[1],"-",input$years3[2],".csv", sep="")}
+      else {paste(substring(my_scale3(),1,3),"-",substring(my_month3(),1,3),"-",input$parameters3,"-",my_location,"-",input$years3[1],"-",input$years3[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv3(),file)}
+  )
+  output$my_download3ds <- downloadHandler(
+    filename = function () {
+      my_location <- if (input$countybox3==FALSE) {NOAA_states[input$state3,2]}
+      else {paste(substring(input$county3,1,nchar(input$county3)-4),"-",NOAA_states[input$state3,2], sep="")}
+      title <- if(input$scale3==1) {paste(substring(my_month3(),1,3),"-",input$parameters3,"-",my_location,"-",input$years3[1],"-",input$years3[2],".csv", sep="")}
+      else {paste(substring(my_scale3(),1,3),"-",substring(my_month3(),1,3),"-",input$parameters3,"-",my_location,"-",input$years3[1],"-",input$years3[2],".csv", sep="")}
+    },
+    content = function (file) {write.csv(my_csv3(),file)}
+  )
   
 })
