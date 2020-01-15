@@ -270,51 +270,19 @@ shinyServer(function(input, output,session) {
   })
   
   
-  output$my_tsplot <- renderPlotly({ ggplotly( 
-     if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
-     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE) {
-       ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-         xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
-         ##graph2
-         geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue") + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue") + 
-         geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2) +
-         ##graph3
-         geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red") + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4") + 
-         geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2) 
-     }
-     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==FALSE) {
-       ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-         xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
-         ##graph2
-         geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue") + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue") + 
-         geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)
-     }
-     else if(input$graph1==TRUE&input$graph2==FALSE&input$graph3==TRUE) {
-       ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-         xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)+
-         ##graph3
-         geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red") + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4") + 
-         geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2)
-     }
-     else if (input$graph1==TRUE&input$graph2==FALSE&input$graph3==FALSE){
-       ggplot(data=my_csv(), aes(x=Year,y=Value)) + geom_line() + geom_point() + geom_smooth(method="lm", se=FALSE, color="dimgrey") + theme_classic() +
-         xlab("Years") + ylab(my_label()) + geom_hline(yintercept=mean(my_csv()$Value), color= "grey",  lty=2)}
-     else if (input$graph1==FALSE&input$graph2==TRUE&input$graph3==FALSE){
-       ggplot(data=my_csv2(), aes(x=Year,y=Value)) + geom_line(color="blue") + geom_point(color="blue") + geom_smooth(method="lm", se=FALSE, color="darkblue") + 
-         theme_classic() + xlab("Years") + ylab(my_label2()) + geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue",  lty=2)}
-     else if (input$graph1==FALSE&input$graph2==TRUE&input$graph3==TRUE){
-       ggplot(data=my_csv2(), aes(x=Year,y=Value), color="blue") + geom_line() + geom_point(color="blue") + geom_smooth(method="lm", se=FALSE, color="darkblue") + 
-         theme_classic() + xlab("Years") + ylab(my_label2()) + geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue",  lty=2) +
-         ##graph3
-         geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red") + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4") + 
-         geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2)
-         }
-     else if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==TRUE){
-       ggplot(data=my_csv3(), aes(x=Year,y=Value)) + geom_line(color="red") + geom_point(color="red") + geom_smooth(method="lm", se=FALSE, color="red4") + 
-         theme_classic() + xlab("Years") + ylab(my_label3()) + geom_hline(yintercept=mean(my_csv3()$Value), color= "pink",  lty=2)
-     }
-     else return(NULL)
-   )})
+  output$my_tsplot <- renderPlotly({
+      g <- ggplot(data=my_csv(), aes(x=Year,y=Value)) + theme_classic() + xlab("Years") + ylab(my_label())
+      if (input$graph1==TRUE) {g <- g + geom_line() + geom_point()}
+      #if (input$meanln1==TRUE) {g <- g + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)}
+      #if (input$trendln1==TRUE) {g <- g + geom_smooth(method="lm", se=FALSE, color="dimgrey")}
+      if (input$graph2==TRUE) {g <- g + geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue")}
+      if (input$meanln2==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)}
+      if (input$trendln2==TRUE) {g <- g + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue")}
+      if (input$graph3==TRUE) {g <- g + geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red")}
+      if (input$meanln3==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2)}
+      if (input$trendln3==TRUE) {g <- g + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4")}
+      ggplotly(g)
+  }) 
   output$my_dsplot <- renderPlotly({ ggplotly(
      if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
      else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE){
@@ -380,7 +348,9 @@ shinyServer(function(input, output,session) {
       slope <- round(summary_lm$coefficients[2],3)
       intercept <- round(summary_lm$coefficients[1],2)
       line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),
+                          plot_formula,checkboxInput("meanln1",h6("Display Mean")),br(),br(),
+                          line_formula,checkboxInput("trendln2",h6("Display Trendline")),br(),br(),
                           downloadButton("my_download1ts","Dowload")))
     }
     else {}
@@ -394,7 +364,8 @@ shinyServer(function(input, output,session) {
       plot_csv <- my_csv()
       plot_label <- as.character(my_label())
       plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),plot_formula,br(),br(),
+      column(4, wellPanel(style = "background: lightgrey",title,br(),br(),
+                          plot_formula,checkboxInput("meands1",h6("Display Mean")),br(),br(),
                           downloadButton("my_download1ds","Dowload")))
     }
     else {}
@@ -440,7 +411,9 @@ shinyServer(function(input, output,session) {
        slope <- round(summary_lm$coefficients[2],3)
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),
+                           plot_formula,checkboxInput("meanln2",h6("Display Mean")),br(),br(),
+                           line_formula,checkboxInput("trendln2",h6("Display Trendline")),br(),br(),
                            downloadButton("my_download2ts","Dowload")))
      }
      else {}
@@ -454,7 +427,8 @@ shinyServer(function(input, output,session) {
        plot_csv <- my_csv2()
        plot_label <- as.character(my_label2())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),plot_formula,br(),br(),
+       column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),
+                           plot_formula,checkboxInput("meands2",h6("Display Mean")),br(),br(),
                            downloadButton("my_download2ds","Dowload")))
      }
      else {}
@@ -500,7 +474,9 @@ shinyServer(function(input, output,session) {
        slope <- round(summary_lm$coefficients[2],3)
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
-       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula,br(),br(),line_formula,br(),br(),
+       column(4, wellPanel(style = "background: pink",title,br(),br(),
+                           plot_formula,checkboxInput("meanln3",h6("Display Mean")),br(),br(),
+                           line_formula,checkboxInput("trendln3",h6("Display Trendline")),br(),br(),
                            downloadButton("my_download3ts","Dowload")))
      }
      else {}
@@ -512,7 +488,8 @@ shinyServer(function(input, output,session) {
        plot_csv <- my_csv3()
        plot_label <- as.character(my_label3())
        plot_formula <- paste("Mean",plot_label,"=",round(mean(plot_csv$Value),2))
-       column(4, wellPanel(style = "background: pink",title,br(),br(),plot_formula,br(),br(),
+       column(4, wellPanel(style = "background: pink",title,br(),br(),
+                           plot_formula,checkboxInput("meands3",h6("Display Mean")),br(),br(),
                            downloadButton("my_download3ds","Dowload")))
      }
      else {}
