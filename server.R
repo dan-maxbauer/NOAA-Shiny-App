@@ -90,7 +90,7 @@ shinyServer(function(input, output,session) {
     state_name <- as.character(NOAA_states[num,1])
     return(state_name)
   })
-  
+
   my_csv2 <- reactive({
     if (input$countybox2==TRUE) {
       my_url <- paste("https://www.ncdc.noaa.gov/cag/county/time-series/",
@@ -269,62 +269,36 @@ shinyServer(function(input, output,session) {
     else {}
   })
   
-  
+  ts_function <- function(){
+    g <- ggplot(data=my_csv(), aes(x=Year,y=Value)) + theme_classic() + xlab("Years") + ylab(my_label())
+    if (input$graph1==TRUE) {g <- g + geom_line() + geom_point()}
+    if (input$meanln1==TRUE) {g <- g + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)}
+    if (input$trendln1==TRUE) {g <- g + geom_smooth(data=my_csv(), method="lm", se=FALSE, color="dimgrey")}
+    if (input$graph2==TRUE) {g <- g + geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue")}
+    if (input$meanln2==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)}
+    if (input$trendln2==TRUE) {g <- g + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue")}
+    if (input$graph3==TRUE) {g <- g + geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red")}
+    if (input$meanln3==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2)}
+    if (input$trendln3==TRUE) {g <- g + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4")}
+    return(g)
+  }
   output$my_tsplot <- renderPlotly({
-      g <- ggplot(data=my_csv(), aes(x=Year,y=Value)) + theme_classic() + xlab("Years") + ylab(my_label())
-      if (input$graph1==TRUE) {g <- g + geom_line() + geom_point()}
-      #if (input$meanln1==TRUE) {g <- g + geom_hline(yintercept=mean(my_csv()$Value), color= "grey", lty=2)}
-      #if (input$trendln1==TRUE) {g <- g + geom_smooth(method="lm", se=FALSE, color="dimgrey")}
-      if (input$graph2==TRUE) {g <- g + geom_line(data=my_csv2(), color="blue") + geom_point(data = my_csv2(), color="blue")}
-      if (input$meanln2==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)}
-      if (input$trendln2==TRUE) {g <- g + geom_smooth(data=my_csv2(), method="lm", se=FALSE, color="darkblue")}
-      if (input$graph3==TRUE) {g <- g + geom_line(data=my_csv3(), color="red") + geom_point(data = my_csv3(), color="red")}
-      if (input$meanln3==TRUE) {g <- g +  geom_hline(yintercept=mean(my_csv3()$Value), color= "pink", lty=2)}
-      if (input$trendln3==TRUE) {g <- g + geom_smooth(data=my_csv3(), method="lm", se=FALSE, color="red4")}
-      ggplotly(g)
-  }) 
-  output$my_dsplot <- renderPlotly({ ggplotly(
-     if (is.null(my_csv())==TRUE|is.null(my_csv2())==TRUE|is.null(my_csv3())==TRUE) {NULL}
-     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==TRUE){
-       ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
-         xlab(my_label()) +
-         ##graph2
-         geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")+
-         ##graph3
-         geom_density(data=my_csv3(),color="red") + geom_vline(aes(xintercept = mean(my_csv3()$Value)), lty = 2,color="red")
-     }
-     else if(input$graph1==TRUE&input$graph2==TRUE&input$graph3==FALSE) {
-       ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
-         xlab(my_label()) +
-         ##graph2
-         geom_density(data=my_csv2(),color="blue") + geom_vline(aes(xintercept = mean(my_csv2()$Value)), lty = 2,color="blue")
-     }
-     else if(input$graph1==TRUE&input$graph2==FALSE&input$graph3==TRUE) {
-       ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
-         xlab(my_label()) +
-         ##graph3
-         geom_density(data=my_csv3(),color="red") + geom_vline(aes(xintercept = mean(my_csv3()$Value)), lty = 2,color="red")
-     }
-     else if (input$graph1==TRUE&input$graph2==FALSE&input$graph3==FALSE){
-       ggplot(data=my_csv(), aes(Value)) + geom_density() +geom_vline(aes(xintercept = mean(Value)), lty = 2) + theme_classic() +
-         xlab(my_label())
-     }
-     else if (input$graph1==FALSE&input$graph2==TRUE&input$graph3==FALSE){
-       ggplot(data=my_csv2(), aes(Value)) + geom_density(color="blue") +geom_vline(aes(xintercept = mean(Value)), lty = 2, color="blue") + theme_classic() +
-         xlab(my_label2())
-       }
-     else if (input$graph1==FALSE&input$graph2==TRUE&input$graph3==TRUE){
-       ggplot(data=my_csv2(), aes(Value)) + geom_density(color="blue") +geom_vline(aes(xintercept = mean(Value)), lty = 2, color="blue") + theme_classic() +
-         xlab(my_label2()) +
-         ##graph3
-       geom_density(data=my_csv3(),color="red") + geom_vline(aes(xintercept = mean(my_csv3()$Value)), lty = 2,color="red")
-     }
-     else if (input$graph1==FALSE&input$graph2==FALSE&input$graph3==TRUE){
-       ggplot(data=my_csv3(), aes(Value)) + geom_density(color="red") +geom_vline(aes(xintercept = mean(Value)), lty = 2, color="red") + theme_classic() +
-         xlab(my_label3())
-      }
-     else return(NULL)
-   )})
+   ggplotly(ts_function())
+  })
+  
+  ds_function <- function(){
+    g <- ggplot(data=my_csv(), aes(Value)) + theme_classic() + xlab(my_label())
+    if (input$graph1==TRUE) {g <- g + geom_density()}
+    if (input$meanln1==TRUE) {g <- g + geom_vline(xintercept=mean(my_csv()$Value), color= "grey", lty=2)}
+    if (input$graph2==TRUE) {g <- g + geom_density(data=my_csv2(), color="blue")}
+    if (input$meanln2==TRUE) {g <- g +  geom_vline(xintercept=mean(my_csv2()$Value), color= "cornflowerblue", lty=2)}
+    if (input$graph3==TRUE) {g <- g + geom_density(data=my_csv3(), color="red")}
+    if (input$meanln3==TRUE) {g <- g +  geom_vline(xintercept=mean(my_csv3()$Value), color= "pink", lty=2)}
+    return(g)
+  }
+  output$my_dsplot <- renderPlotly({
+    ggplotly(ds_function())
+  })
 
   output$county_box1 <- renderUI({
     county_legend_list <- list()
@@ -349,8 +323,8 @@ shinyServer(function(input, output,session) {
       intercept <- round(summary_lm$coefficients[1],2)
       line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
       column(4, wellPanel(style = "background: lightgrey",title,br(),br(),
-                          plot_formula,checkboxInput("meanln1",h6("Display Mean")),br(),br(),
-                          line_formula,checkboxInput("trendln2",h6("Display Trendline")),br(),br(),
+                          plot_formula,br(),br(),
+                          line_formula,br(),br(),
                           downloadButton("my_download1ts","Dowload")))
     }
     else {}
@@ -412,8 +386,8 @@ shinyServer(function(input, output,session) {
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
        column(4, wellPanel(style = "background: cornflowerblue",title,br(),br(),
-                           plot_formula,checkboxInput("meanln2",h6("Display Mean")),br(),br(),
-                           line_formula,checkboxInput("trendln2",h6("Display Trendline")),br(),br(),
+                           plot_formula,br(),br(),
+                           line_formula,br(),br(),
                            downloadButton("my_download2ts","Dowload")))
      }
      else {}
@@ -475,8 +449,8 @@ shinyServer(function(input, output,session) {
        intercept <- round(summary_lm$coefficients[1],2)
        line_formula <- paste("Value =",intercept, "+", slope,"*Year",sep="")
        column(4, wellPanel(style = "background: pink",title,br(),br(),
-                           plot_formula,checkboxInput("meanln3",h6("Display Mean")),br(),br(),
-                           line_formula,checkboxInput("trendln3",h6("Display Trendline")),br(),br(),
+                           plot_formula,br(),br(),
+                           line_formula,br(),br(),
                            downloadButton("my_download3ts","Dowload")))
      }
      else {}
