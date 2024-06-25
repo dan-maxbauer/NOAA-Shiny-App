@@ -11,7 +11,7 @@ shinyServer(function(input, output,session) {
                             "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT",
                             "VT","VA","WA","WV","WI","WY","NULL","AK","HI")
   
-  counties <- readr::read_table("https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt",skip=70)
+  counties <- readr::read_table("https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt",skip=71)
   counties <- counties[-c(1,2,70,99,115,191,250,314,323,329,397,557,563,608,711,804,904,1010,1131,1196,1213,
                           1238,1253,1337,1425,1508,1624,1682,1776,1794,1805,1827,1861,1924,2025,2079,2168,
                           2246,2283,2351,2357,2404,2471,2567,2822,2852,2867,3004,3044,3100,3173),]
